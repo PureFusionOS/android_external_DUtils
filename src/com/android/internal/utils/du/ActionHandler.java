@@ -130,7 +130,6 @@ public class ActionHandler {
     public static final String SYSTEMUI_TASK_STOP_SCREENPINNING = "task_stop_screenpinning";
     public static final String SYSTEMUI_TASK_CLEAR_NOTIFICATIONS = "task_clear_notifications";
     public static final String SYSTEMUI_TASK_VOLUME_PANEL = "task_volume_panel";
-    public static final String SYSTEMUI_TASK_EDITING_SMARTBAR = "task_editing_smartbar";
     public static final String SYSTEMUI_TASK_SPLIT_SCREEN = "task_split_screen";
     public static final String SYSTEMUI_TASK_ONE_HANDED_MODE_LEFT = "task_one_handed_mode_left";
     public static final String SYSTEMUI_TASK_ONE_HANDED_MODE_RIGHT = "task_one_handed_mode_right";
@@ -166,14 +165,12 @@ public class ActionHandler {
         Back(SYSTEMUI_TASK_BACK, SYSTEMUI, "label_action_back", "ic_sysbar_back"),
         Home(SYSTEMUI_TASK_HOME, SYSTEMUI, "label_action_home", "ic_sysbar_home"),
         Ime(SYSTEMUI_TASK_IME_SWITCHER, SYSTEMUI, "label_action_ime_switcher", "ic_ime_switcher_default"),
-        StopScreenPinning(SYSTEMUI_TASK_STOP_SCREENPINNING, SYSTEMUI, "label_action_stop_screenpinning", "ic_smartbar_screen_pinning_off"),
         ImeArrowDown(SYSTEMUI_TASK_IME_NAVIGATION_DOWN, SYSTEMUI, "label_action_ime_down", "ic_sysbar_ime_down"),
         ImeArrowLeft(SYSTEMUI_TASK_IME_NAVIGATION_LEFT, SYSTEMUI, "label_action_ime_left", "ic_sysbar_ime_left"),
         ImeArrowRight(SYSTEMUI_TASK_IME_NAVIGATION_RIGHT, SYSTEMUI, "label_action_ime_right", "ic_sysbar_ime_right"),
         ImeArrowUp(SYSTEMUI_TASK_IME_NAVIGATION_UP, SYSTEMUI, "label_action_ime_up", "ic_sysbar_ime_up"),
         ClearNotifications(SYSTEMUI_TASK_CLEAR_NOTIFICATIONS, SYSTEMUI, "label_action_clear_notifications", "ic_sysbar_clear_notifications"),
         VolumePanel(SYSTEMUI_TASK_VOLUME_PANEL, SYSTEMUI, "label_action_volume_panel", "ic_sysbar_volume_panel"),
-        EditingSmartbar(SYSTEMUI_TASK_EDITING_SMARTBAR, SYSTEMUI, "label_action_editing_smartbar", "ic_sysbar_editing_smartbar"),
         SplitScreen(SYSTEMUI_TASK_SPLIT_SCREEN, SYSTEMUI, "label_action_split_screen", "ic_sysbar_docked"),
         OneHandedModeLeft(SYSTEMUI_TASK_ONE_HANDED_MODE_LEFT, SYSTEMUI, "label_action_one_handed_mode_left", "ic_sysbar_one_handed_mode_left"),
         OneHandedModeRight(SYSTEMUI_TASK_ONE_HANDED_MODE_RIGHT, SYSTEMUI, "label_action_one_handed_mode_right", "ic_sysbar_one_handed_mode_right"),
@@ -212,11 +209,10 @@ public class ActionHandler {
             SystemAction.Back, SystemAction.VoiceSearch,
             SystemAction.Home, SystemAction.ExpandedDesktop,
             SystemAction.Screenrecord, SystemAction.Ime,
-            SystemAction.StopScreenPinning, SystemAction.ImeArrowDown,
+            SystemAction.SplitScreen, SystemAction.ImeArrowDown,
             SystemAction.ImeArrowLeft, SystemAction.ImeArrowRight,
             SystemAction.ImeArrowUp, SystemAction.InAppSearch,
             SystemAction.VolumePanel, SystemAction.ClearNotifications,
-            SystemAction.EditingSmartbar, SystemAction.SplitScreen,
             SystemAction.RegionScreenshot, SystemAction.OneHandedModeLeft,
             SystemAction.OneHandedModeRight, SystemAction.MediaArrowLeft,
             SystemAction.MediaArrowRight
@@ -282,13 +278,6 @@ public class ActionHandler {
             } else if (TextUtils.equals(action, SYSTEMUI_TASK_SCREENRECORD)) {
                 if (!DUActionUtils.getBoolean(context, "config_enableScreenrecordChord",
                         DUActionUtils.PACKAGE_ANDROID)) {
-                    continue;
-                }
-            } else if (TextUtils.equals(action, SYSTEMUI_TASK_EDITING_SMARTBAR)) {
-                // don't allow smartbar editor on Fling
-                if (Settings.Secure.getIntForUser(context.getContentResolver(),
-                        Settings.Secure.NAVIGATION_BAR_MODE, 0,
-                        UserHandle.USER_CURRENT) == 1) {
                     continue;
                 }
             }
@@ -629,9 +618,6 @@ public class ActionHandler {
             return;
         } else if (action.equals(SYSTEMUI_TASK_VOLUME_PANEL)) {
             volumePanel(context);
-            return;
-        } else if (action.equals(SYSTEMUI_TASK_EDITING_SMARTBAR)) {
-            editingSmartbar(context);
             return;
         } else if (action.equals(SYSTEMUI_TASK_SPLIT_SCREEN)) {
             StatusBarHelper.splitScreen();
@@ -1052,10 +1038,6 @@ public class ActionHandler {
     public static void volumePanel(Context context) {
         AudioManager am = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         am.adjustVolume(AudioManager.ADJUST_SAME, AudioManager.FLAG_SHOW_UI);
-    }
-    public static void editingSmartbar(Context context) {
-        context.sendBroadcastAsUser(new Intent("intent_navbar_edit"), new UserHandle(
-                UserHandle.USER_ALL));
     }
 
     private static void toggleOneHandedMode(Context context, String direction) {
